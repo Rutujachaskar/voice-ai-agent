@@ -336,13 +336,13 @@ voice-agent/
 
 ## 🔗 Links
 
-* **GitHub**: [Add your repo link]
-* **Demo Video**: [Add YouTube unlisted link]
-* **Article**: [Add Medium/Dev.to link]
+* **GitHub**: https://github.com/Rutujachaskar/voice-ai-agent
+* **Demo Video**: https://youtu.be/Lypb7tLFm_M
+* **Article**: https://medium.com/@rutujachaskar477/introduction-ebb57e603ce6
 =======
 ## 🎥 Demo
 
-(Add your YouTube demo link here)
+https://youtu.be/Lypb7tLFm_M
 
 ---
 
