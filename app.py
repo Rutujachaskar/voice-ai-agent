@@ -1,6 +1,5 @@
 
 
-
 # """
 # app.py — Voice-Controlled Local AI Agent
 # Mem0 Internship Assignment — Rutuja
@@ -51,6 +50,34 @@
 
 #     require_confirm = st.toggle("Human-in-the-Loop", value=True)
 
+#     st.divider()
+
+#     col1, col2 = st.columns(2)
+#     col1.metric("Requests", len(st.session_state.history))
+#     col2.metric("Files", len(list(OUTPUT_DIR.glob("*"))))
+
+#     st.divider()
+
+#     st.markdown("### 📜 History")
+
+#     if st.session_state.history:
+#         intent_colors = {
+#             "create_file": "🟢",
+#             "write_code": "🔵",
+#             "summarize": "🟡",
+#             "general_chat": "🟣",
+#         }
+#         for item in reversed(st.session_state.history[-8:]):
+#             icon = intent_colors.get(item["intent"], "⚪")
+#             st.markdown(
+#                 f"{icon} **{item['intent'].replace('_', ' ')}**  \n"
+#                 f"<span style='color:#888;font-size:0.8rem'>{item['transcript'][:45]}…</span>",
+#                 unsafe_allow_html=True
+#             )
+#             st.divider()
+#     else:
+#         st.info("Run a command to see history here.")
+
 #     if st.button("🗑 Clear History"):
 #         st.session_state.history.clear()
 #         st.session_state.memory.clear()
@@ -92,7 +119,7 @@
 #                 try:
 #                     content = f.read_text(encoding="utf-8")
 #                     st.code(content)
-#                 except:
+#                 except Exception:
 #                     st.warning("Cannot read file")
 
 # # ── PIPELINE RENDER ────────────────────────────────────────────────────
@@ -113,7 +140,6 @@
 #             st.error(result["error"])
 #         else:
 #             intent = intent_data.get("intent")
-
 #             if intent == "write_code":
 #                 lang = result.get("language", "python")
 #                 st.code(result.get("output"), language=lang)
@@ -143,6 +169,11 @@
 #                 pend["transcript"], pend["intent_data"], result
 #             )
 
+#             st.session_state.history.append({
+#                 "transcript": pend["transcript"],
+#                 "intent": pend["intent"],
+#             })
+
 #             st.session_state.last_result = (
 #                 pend["transcript"],
 #                 pend["intent_data"],
@@ -150,14 +181,10 @@
 #             )
 
 #             st.session_state.pending = None
-
-#             st.success("✅ Executed successfully")
-
-#             st.rerun()  # IMPORTANT
+#             st.rerun()
 
 #         if col2.button("❌ Cancel"):
 #             st.session_state.pending = None
-#             st.info("Action cancelled")
 #             st.rerun()
 
 # # ── SHOW LAST RESULT ───────────────────────────────────────────────────
@@ -175,7 +202,6 @@
 #     with tab_output:
 #         status = st.status("Running pipeline…", expanded=True)
 
-#         # ── STEP 1: INPUT / STT ────────────────────────────────────────
 #         if text_cmd.strip():
 #             transcript = text_cmd.strip()
 #         else:
@@ -202,19 +228,16 @@
 #             finally:
 #                 try:
 #                     os.unlink(tmp_path)
-#                 except:
+#                 except Exception:
 #                     pass
 
-#         # ── STEP 2: INTENT ────────────────────────────────────────────
 #         try:
 #             context = st.session_state.memory.get_context()
-
 #             intent_data = classify_intent(
 #                 transcript,
 #                 model=llm_model,
 #                 context=context
 #             )
-
 #         except Exception as e:
 #             st.error(f"LLM Error: {e}")
 #             st.stop()
@@ -222,7 +245,6 @@
 #         intent = intent_data.get("intent", "general_chat")
 #         params = intent_data.get("params", {}) or {}
 
-#         # ── STEP 3: TOOL / CONFIRM ────────────────────────────────────
 #         if require_confirm and intent in ("create_file", "write_code"):
 #             st.session_state.pending = {
 #                 "transcript": transcript,
@@ -237,6 +259,12 @@
 
 #             st.session_state.memory.add(transcript, intent_data, result)
 
+#             # ✅ FIXED: append to history
+#             st.session_state.history.append({
+#                 "transcript": transcript,
+#                 "intent": intent,
+#             })
+
 #             st.session_state.last_result = (
 #                 transcript,
 #                 intent_data,
@@ -246,6 +274,7 @@
 #             status.update(label="Pipeline complete ✅", state="complete")
 
 #             st.rerun()
+
 
 """
 app.py — Voice-Controlled Local AI Agent
@@ -356,18 +385,61 @@ with tab_input:
 
 # ── FILES TAB ──────────────────────────────────────────────────────────
 with tab_files:
-    files = list(OUTPUT_DIR.glob("*"))
+    files = sorted(OUTPUT_DIR.glob("*"), key=lambda x: x.stat().st_mtime, reverse=True)
 
     if not files:
-        st.info("No files yet.")
+        st.info("No output files yet. Run the agent to create files.")
     else:
-        for f in sorted(files, key=lambda x: x.stat().st_mtime, reverse=True):
-            with st.expander(f"📄 {f.name} ({f.stat().st_size} bytes)"):
+        # ── Delete All button ──────────────────────────────────────────
+        col_info, col_del = st.columns([3, 1])
+        col_info.markdown(f"**{len(files)} file(s)** in output folder")
+
+        if col_del.button("🗑 Delete All", type="primary", use_container_width=True):
+            for f in files:
+                try:
+                    f.unlink()
+                except Exception:
+                    pass
+            st.success("✅ All files deleted!")
+            st.rerun()
+
+        st.divider()
+
+        # ── Individual files ───────────────────────────────────────────
+        for f in files:
+            with st.expander(f"📄 {f.name}  —  {f.stat().st_size} bytes"):
                 try:
                     content = f.read_text(encoding="utf-8")
-                    st.code(content)
+                    lang = f.suffix.lstrip(".") or "text"
+                    st.code(content, language=lang)
+
+                    btn_col1, btn_col2 = st.columns(2)
+
+                    # Download button
+                    btn_col1.download_button(
+                        label="⬇ Download",
+                        data=content,
+                        file_name=f.name,
+                        mime="text/plain",
+                        use_container_width=True,
+                        key=f"download_{f.name}"
+                    )
+
+                    # Delete individual file
+                    if btn_col2.button(
+                        "🗑 Delete",
+                        key=f"delete_{f.name}",
+                        use_container_width=True
+                    ):
+                        f.unlink()
+                        st.success(f"✅ Deleted {f.name}")
+                        st.rerun()
+
                 except Exception:
-                    st.warning("Cannot read file")
+                    st.warning("Cannot read file.")
+                    if st.button("🗑 Delete", key=f"delete_bin_{f.name}"):
+                        f.unlink()
+                        st.rerun()
 
 # ── PIPELINE RENDER ────────────────────────────────────────────────────
 def render_pipeline(transcript, intent_data, result):
@@ -506,7 +578,6 @@ if run_btn:
 
             st.session_state.memory.add(transcript, intent_data, result)
 
-            # ✅ FIXED: append to history
             st.session_state.history.append({
                 "transcript": transcript,
                 "intent": intent,
