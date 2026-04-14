@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎙️ VoiceAgent — Voice-Controlled Local AI Agent
 
 > Mem0 AI/ML & Generative AI Developer Internship Assignment
@@ -64,6 +65,60 @@ Audio Input (mic/upload/text)
 ```bash
 git clone https://github.com/YOUR_USERNAME/voice-agent
 cd voice-agent
+=======
+# 🎙 Voice-Controlled AI Agent (Mem0 Assignment)
+
+## 📌 Overview
+
+This project is a Voice-Controlled AI Agent that processes user commands through speech or text and performs intelligent actions like code generation, file creation, summarization, and chat responses.
+
+Pipeline:
+Audio Input → Speech-to-Text → Intent Classification → Tool Execution → Output
+
+---
+
+## 🚀 Features
+
+* 🎤 Speech-to-Text using Groq Whisper API
+* 🧠 Intent classification using Groq LLM
+* ⚙️ Tool execution (code generation, file creation, summarization)
+* 📁 Output file generation
+* 🔒 Human-in-the-loop confirmation for safety
+* 🧾 Session memory tracking
+
+---
+
+## 🏗 Architecture
+
+User Input (Audio/Text)
+↓
+Speech-to-Text (Groq Whisper)
+↓
+Intent Classification (Groq LLM)
+↓
+Tool Execution Layer
+↓
+Output (UI + File System)
+
+---
+
+## 🛠 Tech Stack
+
+* Streamlit (Frontend UI)
+* Groq API (LLM + Whisper)
+* Python
+* File System for storage
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Rutujachaskar/voice-ai-agent.git
+cd voice-ai-agent
+>>>>>>> a9a60fb3251fff62beb714378f33f7e637a54366
 ```
 
 ### 2. Install dependencies
@@ -72,6 +127,7 @@ cd voice-agent
 pip install -r requirements.txt
 ```
 
+<<<<<<< HEAD
 ### 3. Set up API key
 
 ```bash
@@ -81,12 +137,23 @@ cp .env.example .env
 
 Get a free key: https://console.groq.com
 
+=======
+### 3. Add environment variables
+
+Create a `.env` file:
+
+```env
+GROQ_API_KEY=your_api_key_here
+```
+
+>>>>>>> a9a60fb3251fff62beb714378f33f7e637a54366
 ### 4. Run the app
 
 ```bash
 streamlit run app.py
 ```
 
+<<<<<<< HEAD
 Open: http://localhost:8501
 
 ---
@@ -193,10 +260,45 @@ Write a JavaScript function to reverse a string
 Create a README file for a todo app
 Summarize this: Artificial Intelligence is transforming industries...
 What is machine learning?
+=======
+---
+
+## 🎤 Usage
+
+### Input methods:
+
+* Record audio 🎤
+* Upload audio file 📎
+* Type command ✏️
+
+### Example commands:
+
+* "Write a Python bubble sort program"
+* "Create a text file with hello world"
+* "What is machine learning?"
+
+---
+
+## ⚠️ Limitations & Workarounds
+
+* Background noise may affect speech recognition
+* Microphone input may not work in deployed environments
+* Uses Groq API (internet required)
+
+---
+
+## 📁 Output
+
+Generated files are stored in:
+
+```bash
+/output
+>>>>>>> a9a60fb3251fff62beb714378f33f7e637a54366
 ```
 
 ---
 
+<<<<<<< HEAD
 ## 🗂️ Project Structure
 
 ```
@@ -237,3 +339,14 @@ voice-agent/
 * **GitHub**: [Add your repo link]
 * **Demo Video**: [Add YouTube unlisted link]
 * **Article**: [Add Medium/Dev.to link]
+=======
+## 🎥 Demo
+
+(Add your YouTube demo link here)
+
+---
+
+## 📝 Author
+
+Rutuja Chaskar
+>>>>>>> a9a60fb3251fff62beb714378f33f7e637a54366
